@@ -1,0 +1,33 @@
+import requests
+import os
+
+TOKEN = os.environ['BOT_TOKEN']
+CHANNEL = os.environ['CHANNEL_ID']
+
+# Получаем свежие курсы ЦБ
+data = requests.get('https://www.cbr-xml-daily.ru/daily_json.js', timeout=15).json()
+
+v = data['Valute']
+date = data['Date'].split('T')[0]
+
+msg = f"""📅 <b>Курсы валют ЦБ РФ на {date}</b>
+
+🇺🇸 Доллар — <b>{v['USD']['Value']}</b> ₽
+🇪🇺 Евро — <b>{v['EUR']['Value']}</b> ₽
+🇨🇳 Юань — <b>{v['CNY']['Value']}</b> ₽
+🇬🇧 Фунт — <b>{v['GBP']['Value']}</b> ₽
+🇯🇵 100 Йен — <b>{v['JPY']['Value']}</b> ₽
+🇹🇷 Лира — <b>{v['TRY']['Value']}</b> ₽
+
+🔗 Источник: Банк России"""
+
+requests.post(
+    f'https://api.telegram.org/bot{TOKEN}/sendMessage',
+    json={
+        'chat_id': CHANNEL,
+        'text': msg,
+        'parse_mode': 'HTML'
+    }
+)
+
+print('✅ Сообщение отправлено в канал!'
