@@ -1,0 +1,26 @@
+name: Курсы валют ежедневно
+
+on:
+  schedule:
+    - cron: '0 8 * * *'   # каждый день в 11:00 МСК (8:00 UTC)
+  workflow_dispatch:      # кнопка "Run workflow" вручную для теста
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Установка Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Установка requests
+        run: pip install requests
+
+      - name: Запуск скрипта
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHANNEL_ID: ${{ secrets.CHANNEL_ID }}
+        run: python bot.py
